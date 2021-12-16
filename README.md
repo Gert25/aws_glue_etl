@@ -30,6 +30,8 @@ Lake Formation starts with the "Use only IAM access control" settings enabled fo
 # AWS Glue Job 
 [Blog](https://aws.amazon.com/blogs/big-data/building-an-aws-glue-etl-pipeline-locally-without-an-aws-account/)
 
+![image](images/AWS.jpg)
+
 ## Install docker image
 Pull docker image 
    `docker pull amazon/aws-glue-libs:glue_libs_1.0.0_image_01`
