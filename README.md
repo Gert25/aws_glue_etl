@@ -1,90 +1,41 @@
-# aws
-AWS repository of cool terraform things
 
-
-
-# Lake Formation Administrator 
-
-A data lake administrator is an IAM user or IAM role that has the ability to grant any principal (including self) any permission on any Data Catalog resource. Designate a data lake administrator as the first user of the Data Catalog. 
-
-# Lake Formation and Glue
-
-To maintain backward compatibility with AWS Glue, AWS Lake Formation has the following initial security settings:
-
-- The Super permission is granted to the group IAMAllowedPrincipals on all existing AWS Glue Data Catalog resources.
-    - The IAMAllowedPrincipals group includes any IAM users and roles that are allowed access to your Data Catalog resources by your IAM policies.
-    - The Super permission enables a principal to perform every supported Lake Formation operation on the database or table on which it is granted.
-
-- "Use only IAM access control" settings are enabled for new Data Catalog resources.
-
-These settings effectively cause access to Data Catalog resources and Amazon S3 locations to be controlled solely by AWS Identity and Access Management (IAM) policies. Individual Lake Formation permissions are not in effect.
-
-Lake Formation starts with the "Use only IAM access control" settings enabled for compatibility with existing AWS Glue Data Catalog behavior. We recommend that you disable these settings to enable fine-grained access control with Lake Formation permissions. [See Steps](https://lakeformation.workshop.aws/lakeformation-basics/default-catalog-settings.html)
-
-
-[Trouble Shooting Lakeformation Issues](https://forums.aws.amazon.com/thread.jspa?threadID=308890)
-
-[Rolling back Lakeformation Permissions](https://github.com/aws-samples/aws-glue-samples/tree/master/utilities/use_only_IAM_access_controls)
-
-
-# AWS Glue Job 
-[Blog](https://aws.amazon.com/blogs/big-data/building-an-aws-glue-etl-pipeline-locally-without-an-aws-account/)
+# AWS Glue ETL 
 
 ![image](images/AWS.jpg)
 
-## Install docker image
-Pull docker image 
-   `docker pull amazon/aws-glue-libs:glue_libs_1.0.0_image_01`
+# Introduction 
 
-## Running Locally  
+The Module illustrates  simple ETL/ELT orchestration with AWS Glue and terraform. The orchestration of the jobs are controlled by aws glue triggers 
 
-### Running pyspark 
+# Pre-requisites 
+ 
+## Terraform docs 
+  
+Documentation for the module is generate using see installation details on the official site. [terraform docs](https://terraform-docs.io/user-guide/introduction/). 
 
-1. Start the container in the background
-```
-docker run -itd \
--v ${PWD}/scripts:/scripts \
--v ${PWD}/data:/data \
--v ${PWD}/output:/output \
---name glue amazon/aws-glue-libs:glue_libs_1.0.0_image_01
-```
+## Terraform 
+ To run the module you will need to install terraform. [See docs](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-2. execute a bash on the container 
+# Documentation 
 
-`docker exec -it glue bash`
+Terraform documentation is automated through `terraform-docs` using a markdown format.
 
-3. Start pyspark execution 
-`/home/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8/bin/pyspark`
+To generate terraform docs use the following command 
 
-**OR**
+`terraform-docs -c .terraform-docs.yml markdown table --output-file README.md  --output-mode inject .`
 
-3. Run glue jobs within the container
-```
-/home/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8/bin/spark-submit /scripts/job1.py \
---JOB_NAME "local_test" \
---OUTPUT_SRC "output" \
---INPUT_SRC "Salaries.csv" \
---SRC_TYPE "csv" \
---ENV "local" \
---OUTPUT_FORMAT "csv" \
---CONN_TYPE "s3"
-```
-### Running Jupyter notebook 
+- `-c` specifies the terraform-docs configuration file to run. 
+- `markdown table` specifies the format of how the documentation is generated which in this case the format will be tables in markdown language. [more details](https://terraform-docs.io/user-guide/configuration/formatter/)
+- `--output-file` specifies where the file output should be written to. In this case it will be `README.md`. [more details](https://terraform-docs.io/user-guide/configuration/output/)
+- `--output-mode inject` specifies write mode which is either `inject` (appends to current document) or `replace` (overwrites document)
+- `.` is the directory of the module you want to generate documentation for
 
-Start the container using the following command 
 
-```
-docker run -itd -p 8888:8888 -p 4040:4040 \
--v ~/.aws:/root/.aws:ro \
--v ${PWD}/scripts/:/home/jupyter/jupyter_default_dir/scripts \
--v ${PWD}/data/:/home/jupyter/jupyter_default_dir/data \
---name glue_jupyter amazon/aws-glue-libs:glue_libs_1.0.0_image_01 /home/jupyter/jupyter_start.sh
-```
 
 
 ### References 
-[Working with AWS Glue Container]
-[Builindg glue pipline localy](https://aws.amazon.com/blogs/big-data/building-an-aws-glue-etl-pipeline-locally-without-an-aws-account/)
+
+[building glue pipline localy](https://aws.amazon.com/blogs/big-data/building-an-aws-glue-etl-pipeline-locally-without-an-aws-account/)
 
 [Glue Connection Types](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html). Note when running Glue localy we specify `s3` as connection type with `POSIX` path argument.  
 
@@ -95,42 +46,67 @@ docker run -itd -p 8888:8888 -p 4040:4040 \
 
 
 
-Start the notebook in your browser by visiting the address `http://localhost:8888`
 
-**NOTE** Ensure you run a pyspark shell within jupyternotebook when working with the glue context
+<!-- BEGIN_TF_DOCS -->
 
-Jupyter notebook home directory 
+## Providers
 
-`/home/jupyter/jupyter_default_dir`
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_template"></a> [template](#provider\_template) | n/a |
+## Requirements
 
-## Workflow Overview
+No requirements.
+## Modules
 
-When you author a job, you supply details about data sources, targets, and other information. The result is a generated Apache Spark API (PySpark) script. You can then store your job definition in the AWS Glue Data Catalog.
+No modules.
 
-The following describes an overall process of authoring jobs in the AWS Glue console:
+## Example
+```
 
-Choose the type of Job you want to run within AWS Glue. There are various types to choose from: 
-- **Python Shell**
-    - You can run script that are compatible with Python 2.7 or Python 3.6
-    - You can't use job bookmarks with Python shell jobs
-    - output of cloudwatch logs are stored `/aws-glue/python-jobs/output` and for errors `/aws-glue/python-jobs/error`
-- **Streaming ETL Jobs**
-    - consume data from streaming source like Amazon Kinesis, Apache Kafka and store data to s3 or JDBC data stores
-    - processes and writes out data in 100 second windows
-    - ues checkpoints to track the data that has been read. 
-    - billed hourly for streaming 
+module "etl" {
+   source = "git::git@github.com:Gert25/aws_glue_etl.git?ref=v0.0.1"
 
-You choose a data source for your job. The tables that represent your data source must already be defined in your Data Catalog. If the source requires a connection, the connection is also referenced in your job. If your job requires multiple data sources, you can add them later by editing the script.
 
-You choose a data target of your job. The tables that represent the data target can be defined in your Data Catalog, or your job can create the target tables when it runs. You choose a target location when you author the job. If the target requires a connection, the connection is also referenced in your job. If your job requires multiple data targets, you can add them later by editing the script.
+    prefix = "euw1-cap"
+    glue_buckets = { 
+      "data" = aws_s3_bucket.data.bucket, 
+      "scripts"= aws_s3_bucket.s3_scripts.bucket 
+      "output" = aws_s3_bucket.output.bucket 
+      }
 
-You customize the job-processing environment by providing arguments for your job and generated script. For more information, see Adding Jobs in AWS Glue.
 
-Initially, AWS Glue generates a script, but you can also edit this script to add sources, targets, and transforms. For more information about transforms, see Built-In Transforms.
+    data_script = "Salaries.csv"
+    job_script =  aws_s3_bucket_object.job1.id
+}
 
-You specify how your job is invoked, either on demand, by a time-based schedule, or by an event. For more information, see Starting Jobs and Crawlers Using Triggers.
+````
 
-Based on your input, AWS Glue generates a PySpark or Scala script. You can tailor the script based on your business needs. For more information, see Editing Scripts in AWS Glue.
+# Workflow Overview
 
-# Triggers
-  
+### Starting a job
+The run a simple ETL process a glue job needs to be be invoked. The glue job is triggered on demand by a glue trigger.
+
+### Input
+The data required by the job is described by `data` key in the `glue_buckets`. This variable specify where the glue job needs to fetch the data it needs to load in order to transform
+
+### Transformation
+Transformation logic is handled by a glue script which is written in python. this script is uploaded to an s3 bucket during compile time. the script should be placed within the `scripts` folder and the file name should be specified by the `data_script` property. The bucket used to store the scripts is specified by `glue_buckets.scripts` property. The object to upload into the bucket should be specified by the `job_script` property. this ensure that terraform loads the script into the s3 bucket during deployment and links it to the glue job.
+
+### Output
+The output of the transformation is stored to a s3 bucket. The output bucket is specified by the `glue_buckets.output` property. it accepts a bucket name where the output is stored.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_data_script"></a> [data\_script](#input\_data\_script) | name of the file within the data\_bucket that glue needs to load | `string` | n/a | yes |
+| <a name="input_glue_buckets"></a> [glue\_buckets](#input\_glue\_buckets) | list of buckets glue uses for its operations | `map(string)` | n/a | yes |
+| <a name="input_job_script"></a> [job\_script](#input\_job\_script) | The name of the script the glue job should run | `string` | n/a | yes |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | resource prefixes | `string` | `"euw1-cap"` | no |
+## Outputs
+
+No outputs.
+
+<!-- END_TF_DOCS -->
