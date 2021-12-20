@@ -1,0 +1,28 @@
+content: |-
+  {{ .Header }}
+  {{ .Providers }}
+  {{ .Requirements }}
+  {{ .Modules }}
+
+  ## Example
+  ```
+  {{ include "examples/etl.tf" }}  
+  ````
+
+  # Workflow Overview
+
+  ### Starting a job
+  The run a simple ETL process a glue job needs to be be invoked. The glue job is triggered on demand by a glue trigger.    
+ 
+  ### Input 
+  The data required by the job is described by `data` key in the `glue_buckets`. This variable specify where the glue job needs to fetch the data it needs to load in order to transform 
+
+  ### Transformation 
+  Transformation logic is handled by a glue script which is written in python. this script is uploaded to an s3 bucket during compile time. the script should be placed within the `scripts` folder and the file name should be specified by the `data_script` property. The bucket used to store the scripts is specified by `glue_buckets.scripts` property. The object to upload into the bucket should be specified by the `job_script` property. this ensure that terraform loads the script into the s3 bucket during deployment and links it to the glue job.
+
+  ### Output 
+   The output of the transformation is stored to a s3 bucket. The output bucket is specified by the `glue_buckets.output` property. it accepts a bucket name where the output is stored.
+  
+  {{ .Inputs }}
+  {{ .Outputs }}
+  {{ .Footer }}
