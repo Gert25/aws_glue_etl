@@ -16,3 +16,10 @@ data "template_file" "data_location_policy" {
     s3_bucket_name = each.value
   }
 }
+
+
+data "template_file" "dremio_policy" {
+
+  template = file("${path.module}/policies/dremio_glue_s3_policy.json")
+  
+}
