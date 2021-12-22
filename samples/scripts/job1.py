@@ -20,7 +20,7 @@ class ENV(Enum):
 
 # TODO : user and password for database connections
 
-args = getResolvedOptions(sys.argv, ['ENV','JOB_NAME', 'OUTPUT_SRC', 'INPUT_SRC', 'OUTPUT_FORMAT', 'SRC_TYPE', 'CONN_TYPE'])
+args = getResolvedOptions(sys.argv, ['ENV','JOB_NAME', 'HOME_DIR','OUTPUT_SRC', 'INPUT_SRC', 'OUTPUT_FORMAT', 'SRC_TYPE', 'CONN_TYPE'])
 glueContext = GlueContext(SparkContext.getOrCreate())
 
 
@@ -32,11 +32,15 @@ OUTPUT_SRC = None
 OUTPUT_FORMAT = args["OUTPUT_FORMAT"] 
 CONN_TYPE = args["CONN_TYPE"] # file or s3
 if current_environment == ENV.LOCAL.value:
-    INPUT_SRC = f'/data/{args["INPUT_SRC"]}'
-    OUTPUT_SRC = f'/output/{args["OUTPUT_SRC"]}/csv'
+    HOME_DIR = args["HOME_DIR"]
+
+    INPUT_SRC = f'{HOME_DIR}/data/{args["INPUT_SRC"]}'
+    OUTPUT_SRC = f'{HOME_DIR}/output/'
+    # TODO: check if file directory exists else raise an exception
 else:
     INPUT_SRC = args["INPUT_SRC"]
     OUTPUT_SRC = args["OUTPUT_SRC"]
+    # TODO: check if buckets exist else through an error
 
 
 # READ INPUT 

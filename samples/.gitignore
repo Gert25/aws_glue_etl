@@ -30,4 +30,3 @@ override.tf.json
 
 # Ignore data files and output files in order to simplify repo
 output
-data
