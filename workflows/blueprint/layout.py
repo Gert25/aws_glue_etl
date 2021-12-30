@@ -39,80 +39,80 @@ def generate_layout(user_params, system_params):
 
     session = boto3.Session(region_name=system_params['region'])
     glue = session.client('glue')
-    s3_client = session.client('s3')
+    # s3_client = session.client('s3')
 
     workflow_name = user_params['WorkflowName']
 
     # Create Database if it does not exists
-    try:
-        glue.create_database(
-            DatabaseInput={
-                'Name': user_params['DestinationDatabaseName']
-            }
-        )
-        print("New database is created.")
-    except glue.exceptions.AlreadyExistsException:
-        print("Existing database is used.")
+    # try:
+    #     glue.create_database(
+    #         DatabaseInput={
+    #             'Name': user_params['DestinationDatabaseName']
+    #         }
+    #     )
+    #     print("New database is created.")
+    # except glue.exceptions.AlreadyExistsException:
+    #     print("Existing database is used.")
 
-    location = {'LocationConstraint': system_params['region']}
+    # location = {'LocationConstraint': system_params['region']}
     # Creating script bucket
-    the_script_bucket = f"aws-glue-scripts-{system_params['accountId']}-{system_params['region']}"
-    try:
-        s3_client.head_bucket(Bucket=the_script_bucket)
-        print("Script bucket already exists: ", the_script_bucket)
-    except ClientError as ce:
-        print(ce)
-        print(ce.response['ResponseMetadata'])
-        print("Creating script bucket: ", the_script_bucket)
-        if system_params['region'] == "us-east-1":
-            bucket = s3_client.create_bucket(Bucket=the_script_bucket)
-        else:
-            bucket = s3_client.create_bucket(Bucket=the_script_bucket, CreateBucketConfiguration=location)
+    # the_script_bucket = f"aws-glue-scripts-{system_params['accountId']}-{system_params['region']}"
+    # try:
+    #     s3_client.head_bucket(Bucket=the_script_bucket)
+    #     print("Script bucket already exists: ", the_script_bucket)
+    # except ClientError as ce:
+    #     print(ce)
+    #     print(ce.response['ResponseMetadata'])
+    #     print("Creating script bucket: ", the_script_bucket)
+    #     if system_params['region'] == "us-east-1":
+    #         bucket = s3_client.create_bucket(Bucket=the_script_bucket)
+    #     else:
+    #         bucket = s3_client.create_bucket(Bucket=the_script_bucket, CreateBucketConfiguration=location)
 
     # Creating temp bucket
-    the_temp_bucket = f"aws-glue-temporary-{system_params['accountId']}-{system_params['region']}"
-    the_temp_prefix = f"{workflow_name}/"
-    the_temp_location = f"s3://{the_temp_bucket}/{the_temp_prefix}"
-    try:
-        s3_client.head_bucket(Bucket=the_temp_bucket)
-        print("Temp bucket already exists: ", the_temp_bucket)
-    except ClientError as ce:
-        print(ce)
-        print(ce.response['ResponseMetadata'])
-        print("Creating temp bucket: ", the_temp_bucket)
-        if system_params['region'] == "us-east-1":
-            bucket = s3_client.create_bucket(Bucket=the_temp_bucket)
-        else:
-            bucket = s3_client.create_bucket(Bucket=the_temp_bucket, CreateBucketConfiguration=location)
+    # the_temp_bucket = f"aws-glue-temporary-{system_params['accountId']}-{system_params['region']}"
+    # the_temp_prefix = f"{workflow_name}/"
+    # the_temp_location = f"s3://{the_temp_bucket}/{the_temp_prefix}"
+    # try:
+    #     s3_client.head_bucket(Bucket=the_temp_bucket)
+    #     print("Temp bucket already exists: ", the_temp_bucket)
+    # except ClientError as ce:
+        # print(ce)
+        # print(ce.response['ResponseMetadata'])
+        # print("Creating temp bucket: ", the_temp_bucket)
+        # if system_params['region'] == "us-east-1":
+        #     bucket = s3_client.create_bucket(Bucket=the_temp_bucket)
+        # else:
+        #     bucket = s3_client.create_bucket(Bucket=the_temp_bucket, CreateBucketConfiguration=location)
 
     # Upload job script to script bucket
-    the_script_key = f"{workflow_name}/{file_name}"
-    the_script_location = f"s3://{the_script_bucket}/{the_script_key}"
-    with open("conversion/conversion.py", "rb") as f:
-        s3_client.upload_fileobj(f, the_script_bucket, the_script_key)
+    # the_script_key = f"{workflow_name}/{file_name}"
+    # the_script_location = f"s3://{the_script_bucket}/{the_script_key}"
+    # with open("conversion/conversion.py", "rb") as f:
+    #     s3_client.upload_fileobj(f, the_script_bucket, the_script_key)
 
     # Structure workflow
     jobs = []
     crawlers = []
 
     # Create tmp Table if it does not exists
-    try:
-        glue.create_table(
-            DatabaseName=user_params['DestinationDatabaseName'],
-            TableInput={
-                'Name': "source_" + user_params['DestinationTableName'],
-                'StorageDescriptor': {
-                    'Location': user_params['InputDataLocation']
-                },
-                'Parameters': {
-                    'groupFiles': 'inPartition',
-                    'groupSize': '33554432',
-                }
-            }
-        )
-        print("New table is created.")
-    except glue.exceptions.AlreadyExistsException:
-        print("Existing table is used.")
+    # try:
+    #     glue.create_table(
+    #         DatabaseName=user_params['DestinationDatabaseName'],
+    #         TableInput={
+    #             'Name': "source_" + user_params['DestinationTableName'],
+    #             'StorageDescriptor': {
+    #                 'Location': user_params['InputDataLocation']
+    #             },
+    #             'Parameters': {
+    #                 'groupFiles': 'inPartition',
+    #                 'groupSize': '33554432',
+    #             }
+    #         }
+    #     )
+    #     print("New table is created.")
+    # except glue.exceptions.AlreadyExistsException:
+    #     print("Existing table is used.")
 
     targets = {
         "CatalogTargets": [
@@ -136,11 +136,11 @@ def generate_layout(user_params, system_params):
 
     command = {
         "Name": "glueetl",
-        "ScriptLocation": the_script_location,
+        "ScriptLocation": user_params["ScriptLocation"],
         "PythonVersion": "3"
     }
     arguments = {
-        "--TempDir": the_temp_location,
+        # "--TempDir": the_temp_location,
         "--job-bookmark-option": "job-bookmark-enable",
         "--job-language": "python",
         "--enable-s3-parquet-optimized-committer": "",
