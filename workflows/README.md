@@ -136,4 +136,8 @@ Your configuration file must include the workflow name as a blueprint parameter,
  - For simple use case there is to much variables to populate and no proper in the console. the process becomes tedious, although simplified through s3 and iam role dropdowns other resources like glue catalog tables and database are not available as well as glue connection. 
  - Infrastructure is created within python scripts and therefore does not follow best practices regarding IaC. 
  - The more infrastructure you create within the python script code the more variables needs to be past to the blue print script which result in more copy and paste work in the console, and cluttering of code within the python script and essentially becomes hard to manage within a CI/CD solution and drift detection. 
+ - s3 dropdown boxes does not allow you to select objects only bucket location. 
+ - AWS blueprint is creating additional overhead on handling I am since it requires additional polices to deploy the workflow resources.
+ - When worflow creation fails all parameters need to be re-entered on the console.
+ - Can't add input validation on input before run. Can't perform security and compliance checks  before creating workflows 
 
