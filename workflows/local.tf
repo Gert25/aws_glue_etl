@@ -1,3 +1,3 @@
-locals { 
-     blueprint_output_dir = "${path.module}/blueprint.zip"
+locals {
+  blueprint_output_dir = "${path.module}/blueprint.zip"
 }

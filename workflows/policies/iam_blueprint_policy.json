@@ -1,0 +1,28 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:CreateJob",
+                "glue:GetCrawler",
+                "glue:GetTrigger",
+                "glue:DeleteCrawler",
+                "glue:CreateTrigger",
+                "glue:DeleteTrigger",
+                "glue:DeleteJob",
+                "glue:CreateWorkflow",
+                "glue:DeleteWorkflow",
+                "glue:GetJob",
+                "glue:GetWorkflow",
+                "glue:CreateCrawler"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": ${iam_roles}
+        }
+    ]
+}

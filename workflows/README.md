@@ -1,3 +1,39 @@
+# Creating Workflow 
+
+In order to create workflows from blueprint you need a role that allows the blueprint to create the aws resource as well as the ability to pass roles to those resources. The role should have a trust relationship with `glue.awsamazon.com`
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "glue:CreateJob",
+                "glue:GetCrawler",
+                "glue:GetTrigger",
+                "glue:DeleteCrawler",
+                "glue:CreateTrigger",
+                "glue:DeleteTrigger",
+                "glue:DeleteJob",
+                "glue:CreateWorkflow",
+                "glue:DeleteWorkflow",
+                "glue:GetJob",
+                "glue:GetWorkflow",
+                "glue:CreateCrawler"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::<account-id>:role/<role-name>"
+        }
+    ]
+}
+```
+
+
 # Writing a blue print
  - The blueprint layout script must include a function that generates the entities in your workflow. You can name this function whatever you like. AWS Glue uses the configuration file to determine the fully qualified name of the function
  - The layout function must accept the following input arguments.
@@ -6,6 +42,7 @@
 |----------|-------------|
 | user_params| python dictionary of blueprint parameter names and values.|
 | system_params | Python dictionary containing two properties: region and accountId| 
+
 
 ## DependsOn Argument 
 
@@ -93,3 +130,10 @@ Your configuration file must include the workflow name as a blueprint parameter,
 
 # Examples
  More Samples for AWS Blue Prints can be found at the AWS [repository](https://github.com/awslabs/aws-glue-blueprint-libs/tree/master/samples)
+
+# Observations
+ - Creates hidden infrastructure within the code for example the triggers that are used to combine workflows
+ - For simple use case there is to much variables to populate and no proper in the console. the process becomes tedious, although simplified through s3 and iam role dropdowns other resources like glue catalog tables and database are not available as well as glue connection. 
+ - Infrastructure is created within python scripts and therefore does not follow best practices regarding IaC. 
+ - The more infrastructure you create within the python script code the more variables needs to be past to the blue print script which result in more copy and paste work in the console, and cluttering of code within the python script and essentially becomes hard to manage within a CI/CD solution and drift detection. 
+

@@ -35,10 +35,10 @@ def generate_cron_expression(minutes, hours, days, number_of_month, days_of_week
 
 
 def generate_layout(user_params, system_params):
-    file_name = "conversion_{0}_{1}.py".format(user_params['DestinationDatabaseName'], user_params['DestinationTableName'])
+    # file_name = "conversion_{0}_{1}.py".format(user_params['DestinationDatabaseName'], user_params['DestinationTableName'])
 
-    session = boto3.Session(region_name=system_params['region'])
-    glue = session.client('glue')
+    # session = boto3.Session(region_name=system_params['region'])
+    # glue = session.client('glue')
     # s3_client = session.client('s3')
 
     workflow_name = user_params['WorkflowName']
@@ -113,61 +113,73 @@ def generate_layout(user_params, system_params):
     #     print("New table is created.")
     # except glue.exceptions.AlreadyExistsException:
     #     print("Existing table is used.")
-
-    targets = {
-        "CatalogTargets": [
-            {
-                "DatabaseName": user_params['DestinationDatabaseName'],
-                "Tables": ["source_" + user_params['DestinationTableName']]
-            }
-        ]
-    }
-
-    crawler = Crawler(
-        Name="{}_crawler".format(workflow_name),
-        Role=user_params['IAMRole'],
-        Targets=targets,
-        Grouping={
-            "TableGroupingPolicy": "CombineCompatibleSchemas"
-        },
-        SchemaChangePolicy={"DeleteBehavior": "LOG"},
-    )
-    crawlers.append(crawler)
+    
 
     command = {
         "Name": "glueetl",
         "ScriptLocation": user_params["ScriptLocation"],
         "PythonVersion": "3"
     }
+
+    output_location =  user_params['OutputDataLocation']
     arguments = {
         # "--TempDir": the_temp_location,
         "--job-bookmark-option": "job-bookmark-enable",
         "--job-language": "python",
-        "--enable-s3-parquet-optimized-committer": "",
-        "--enable-rename-algorithm-v2": "",
-        "--enable-metrics": "",
         "--enable-continuous-cloudwatch-log": "true",
+        "--ENV" : "production",
         "--output_database": user_params['DestinationDatabaseName'],
         "--tmp_table": "source_" + user_params['DestinationTableName'],
         "--output_table": user_params['DestinationTableName'],
-        "--output_path": user_params['OutputDataLocation']
+        "--OUTPUT_SRC": output_location,
+        "--INPUT_SRC" : user_params['InputDataLocation'],
+        "--OUTPUT_FORMAT" : "parquet", 
+        "--HOME_DIR": "",
+        "--SRC_TYPE" : "csv",
+        "--CONN_TYPE" : "s3"
     }
 
     transform_job = Job(
-        Name="{0}_conversion_{1}_{2}".format(workflow_name, user_params['DestinationDatabaseName'], user_params['DestinationTableName']),
+        Name="{}_job.format(workflow_name)",
         Command=command,
         Role=user_params['IAMRole'],
         DefaultArguments=arguments,
         WorkerType="G.1X",
         NumberOfWorkers=user_params['NumberOfWorkers'],
-        GlueVersion="3.0",
-        DependsOn={crawler: "SUCCEEDED"}
-    )
+        GlueVersion="3.0"
+     )
 
-    jobs.append(transform_job)
+#  Crawlers API : https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html
+
+# https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-CrawlerTargets
+    targets = {
+        "S3Targets": [{"Path" : output_location } ]
+        # "CatalogTargets": [
+        #     {
+        #         "DatabaseName": user_params['DestinationDatabaseName'],
+        #         "Tables": ["source_" + user_params['DestinationTableName']]
+        #     }
+        # ]
+    }
+
+    crawler = Crawler(
+        Name="{}_crawler".format(workflow_name),
+        Role=user_params['IAMRole'],
+        Targets=targets,
+        DatabaseName=user_params['DestinationDatabaseName'],
+        Grouping={
+            "TableGroupingPolicy": "CombineCompatibleSchemas"
+        },
+        SchemaChangePolicy={"DeleteBehavior": "LOG"},
+        DependsOn={transform_job: "SUCCEEDED"}
+    )
+ 
+
 
     
-
+    jobs.append(transform_job)
+    crawlers.append(crawler)
+    
     workflow = Workflow(Name=workflow_name, Entities=Entities(Jobs=jobs, Crawlers=crawlers))
 
     return workflow
