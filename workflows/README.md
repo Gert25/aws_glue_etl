@@ -1,3 +1,33 @@
+# Running localy 
+
+## Prerequisites
+[docs](https://docs.aws.amazon.com/glue/latest/dg/developing-blueprints-prereq.html)
+
+- This module assumes that you have git setup on your local machine
+- The module assumes that you have a version on python 2.6 or later installed on your local environment
+- The module assumes you have python package manager `pip` installed. [docs](https://pip.pypa.io/en/stable/installation/)
+- The module assumes you have python environment manager `virtualevn` be installed [docs](`https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d`)
+
+
+
+In order to run blue-prints locally you need to clone the glue-blueprint libraries repository 
+`git@github.com:awslabs/aws-glue-blueprint-libs.git`
+
+and import them from the `awsglue` within the repository folder
+
+```
+from pprint import pprint
+from awsglue.blueprint.workflow import *
+from awsglue.blueprint.job import *
+from awsglue.blueprint.crawler import *
+```
+
+**Note** that this library might already be installed in the repository. 
+
+
+
+
+
 # Creating Workflow 
 
 In order to create workflows from blueprint you need a role that allows the blueprint to create the aws resource as well as the ability to pass roles to those resources. The role should have a trust relationship with `glue.awsamazon.com`
