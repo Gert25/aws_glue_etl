@@ -7,31 +7,7 @@ from awsglue.blueprint.crawler import *
 import boto3
 from botocore.client import ClientError
 import datetime
-
-
-def generate_schedule(type):
-    now = datetime.datetime.utcnow()
-    year = now.year
-    number_of_month = now.month
-    days = now.day
-    hours = now.hour
-    minutes = now.minute
-    days_of_week = now.weekday()
-
-    if type == 'Hourly':
-        return generate_cron_expression(minutes, "0/1", "*", "*", "?", "*")
-    elif type == 'Daily':
-        return generate_cron_expression(minutes, hours, "*", "*", "?", "*")
-    elif type == 'Weekly':
-        return generate_cron_expression(minutes, hours, "?", "*", days_of_week, "*")
-    elif type == 'Monthly':
-        return generate_cron_expression(minutes, hours, days, "*", "?", "*")
-    else:
-        return generate_cron_expression(minutes, hours, days, number_of_month, "?", year)
-
-
-def generate_cron_expression(minutes, hours, days, number_of_month, days_of_week, year):
-    return "cron({0} {1} {2} {3} {4} {5})".format(minutes, hours, days, number_of_month, days_of_week, year)
+import os
 
 
 def generate_layout(user_params, system_params):
@@ -140,7 +116,7 @@ def generate_layout(user_params, system_params):
     }
 
     transform_job = Job(
-        Name="{}_job.format(workflow_name)",
+        Name="{}_job".format(workflow_name),
         Command=command,
         Role=user_params['IAMRole'],
         DefaultArguments=arguments,
@@ -183,3 +159,59 @@ def generate_layout(user_params, system_params):
     workflow = Workflow(Name=workflow_name, Entities=Entities(Jobs=jobs, Crawlers=crawlers))
 
     return workflow
+
+
+
+
+print(__name__)
+
+
+def main():
+    try:
+        USER_PARAMS = {"WorkflowName": os.environ["_WorkflowName"],
+               "ScriptLocation": os.environ["_ScriptLocation"],
+               "IAMRole": os.environ["_IAMRole"],
+               "InputDataLocation": os.environ["_InputDataLocation"],
+               "DestinationDatabaseName": os.environ["_DestinationDatabaseName"],
+               "DestinationTableName" :  os.environ["_DestinationTableName"],
+               "OutputDataLocation": os.environ["_OutputDataLocation"],
+               "NumberOfWorkers": int(os.environ["_NumberOfWorkers"])}
+        generated = generate_layout(user_params=USER_PARAMS, system_params={})
+        gen_dict = generated.validate()
+        print(gen_dict)
+    except KeyError as key_err:
+        print( "No environment variable {} exist".format(key_err))
+
+    
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+def generate_schedule(type):
+    now = datetime.datetime.utcnow()
+    year = now.year
+    number_of_month = now.month
+    days = now.day
+    hours = now.hour
+    minutes = now.minute
+    days_of_week = now.weekday()
+
+    if type == 'Hourly':
+        return generate_cron_expression(minutes, "0/1", "*", "*", "?", "*")
+    elif type == 'Daily':
+        return generate_cron_expression(minutes, hours, "*", "*", "?", "*")
+    elif type == 'Weekly':
+        return generate_cron_expression(minutes, hours, "?", "*", days_of_week, "*")
+    elif type == 'Monthly':
+        return generate_cron_expression(minutes, hours, days, "*", "?", "*")
+    else:
+        return generate_cron_expression(minutes, hours, days, number_of_month, "?", year)
+
+
+def generate_cron_expression(minutes, hours, days, number_of_month, days_of_week, year):
+    return "cron({0} {1} {2} {3} {4} {5})".format(minutes, hours, days, number_of_month, days_of_week, year)
+
+

@@ -9,7 +9,6 @@
 - The module assumes you have python environment manager `virtualevn` be installed [docs](`https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d`)
 
 
-
 In order to run blue-prints locally you need to clone the glue-blueprint libraries repository 
 `git@github.com:awslabs/aws-glue-blueprint-libs.git`
 
@@ -24,8 +23,44 @@ from awsglue.blueprint.crawler import *
 
 **Note** that this library might already be installed in the repository. 
 
+In order to run the blueprint locally it still requires that you deploy some AWS resources
+
+Enure that you are in the root of the workflows directory. Install terraform dependencies
+
+`terraform init`
+
+Deploy infrastructure.
+
+`terraform apply`
+
+The infrastructure will be deployed using your default AWS profile. You can change your targeted profile in the `provider.tf` file
+
+Run the following command to output the terraform resources and store it in local environment 
+
+`terraform output -json user_params | jq -r . > output.sh && source output.sh`
+ 
+- The following command assumes that you are running a bash terminal with `jq` installed. 
 
 
+
+## Installing python dependencies 
+
+cd into blueprint folder 
+
+`cd blueprint`
+
+
+create a virtual environment and call it `env` 
+
+`virtualenv env`
+
+Activate the environment 
+
+`source env/bin/activate`
+
+Install dependencies 
+
+`pip install -r requirements.txt`
 
 
 # Creating Workflow 
