@@ -35,13 +35,11 @@ Deploy infrastructure.
 
 The infrastructure will be deployed using your default AWS profile. You can change your targeted profile in the `provider.tf` file
 
-Run the following command to output the terraform resources and store it in local environment 
+if you terraform executing successfully a bootstrap.sh folder should exist in the root directory of workflows folder. Run the following command to execute the bootstrap command
 
-`terraform output -json user_params | jq -r . > output.sh && source output.sh`
- 
-- The following command assumes that you are running a bash terminal with `jq` installed. 
+`. bootstrap.sh`
 
-
+This should export environment variables to populate `user_params` for AWS glue workflow when running locally.   
 
 ## Installing python dependencies 
 
@@ -49,8 +47,7 @@ cd into blueprint folder
 
 `cd blueprint`
 
-
-create a virtual environment and call it `env` 
+create a virtual environment and call it `env` if it does not exist already
 
 `virtualenv env`
 
@@ -61,6 +58,18 @@ Activate the environment
 Install dependencies 
 
 `pip install -r requirements.txt`
+
+execute the `layout.py` script 
+
+python version 2
+`python layout.py`
+
+or 
+
+python version 3
+
+`python3 layout.py`
+
 
 
 # Creating Workflow 

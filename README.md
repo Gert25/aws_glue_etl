@@ -174,7 +174,7 @@ module "etl" {
     job_script =  aws_s3_bucket_object.job1.id
 }
 
-````
+```
 
 # Workflow Overview
 
@@ -203,3 +203,8 @@ The output of the transformation is stored to a s3 bucket. The output bucket is 
 No outputs.
 
 <!-- END_TF_DOCS -->
+
+
+## Reference 
+
+Airflow AWS Cloud: [link](https://programmaticponderings.com/tag/aws-glue/)

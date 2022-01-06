@@ -110,7 +110,7 @@ def generate_layout(user_params, system_params):
         "--OUTPUT_SRC": output_location,
         "--INPUT_SRC" : user_params['InputDataLocation'],
         "--OUTPUT_FORMAT" : "parquet", 
-        "--HOME_DIR": "",
+        "--HOME_DIR": "NONE",
         "--SRC_TYPE" : "csv",
         "--CONN_TYPE" : "s3"
     }
@@ -188,30 +188,5 @@ if __name__ == "__main__":
 
 
 
-
-
-def generate_schedule(type):
-    now = datetime.datetime.utcnow()
-    year = now.year
-    number_of_month = now.month
-    days = now.day
-    hours = now.hour
-    minutes = now.minute
-    days_of_week = now.weekday()
-
-    if type == 'Hourly':
-        return generate_cron_expression(minutes, "0/1", "*", "*", "?", "*")
-    elif type == 'Daily':
-        return generate_cron_expression(minutes, hours, "*", "*", "?", "*")
-    elif type == 'Weekly':
-        return generate_cron_expression(minutes, hours, "?", "*", days_of_week, "*")
-    elif type == 'Monthly':
-        return generate_cron_expression(minutes, hours, days, "*", "?", "*")
-    else:
-        return generate_cron_expression(minutes, hours, days, number_of_month, "?", year)
-
-
-def generate_cron_expression(minutes, hours, days, number_of_month, days_of_week, year):
-    return "cron({0} {1} {2} {3} {4} {5})".format(minutes, hours, days, number_of_month, days_of_week, year)
 
 
