@@ -1,95 +1,25 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from awsglue.blueprint.workflow import Workflow, Entities
-from awsglue.blueprint.job import Job
-from awsglue.blueprint.crawler import *
+
 import boto3
 from botocore.client import ClientError
 import datetime
 import os
+from  pathlib import Path
+import sys
 
 
 def generate_layout(user_params, system_params):
-    # file_name = "conversion_{0}_{1}.py".format(user_params['DestinationDatabaseName'], user_params['DestinationTableName'])
 
-    # session = boto3.Session(region_name=system_params['region'])
-    # glue = session.client('glue')
-    # s3_client = session.client('s3')
-
+    #Note: These packages are imported here since there path depends on the environemnt (local, AWS)
+    from  awsglue.blueprint.workflow import Workflow, Entities
+    from  awsglue.blueprint.job import Job
+    from  awsglue.blueprint.crawler import Crawler
+    
     workflow_name = user_params['WorkflowName']
-
-    # Create Database if it does not exists
-    # try:
-    #     glue.create_database(
-    #         DatabaseInput={
-    #             'Name': user_params['DestinationDatabaseName']
-    #         }
-    #     )
-    #     print("New database is created.")
-    # except glue.exceptions.AlreadyExistsException:
-    #     print("Existing database is used.")
-
-    # location = {'LocationConstraint': system_params['region']}
-    # Creating script bucket
-    # the_script_bucket = f"aws-glue-scripts-{system_params['accountId']}-{system_params['region']}"
-    # try:
-    #     s3_client.head_bucket(Bucket=the_script_bucket)
-    #     print("Script bucket already exists: ", the_script_bucket)
-    # except ClientError as ce:
-    #     print(ce)
-    #     print(ce.response['ResponseMetadata'])
-    #     print("Creating script bucket: ", the_script_bucket)
-    #     if system_params['region'] == "us-east-1":
-    #         bucket = s3_client.create_bucket(Bucket=the_script_bucket)
-    #     else:
-    #         bucket = s3_client.create_bucket(Bucket=the_script_bucket, CreateBucketConfiguration=location)
-
-    # Creating temp bucket
-    # the_temp_bucket = f"aws-glue-temporary-{system_params['accountId']}-{system_params['region']}"
-    # the_temp_prefix = f"{workflow_name}/"
-    # the_temp_location = f"s3://{the_temp_bucket}/{the_temp_prefix}"
-    # try:
-    #     s3_client.head_bucket(Bucket=the_temp_bucket)
-    #     print("Temp bucket already exists: ", the_temp_bucket)
-    # except ClientError as ce:
-        # print(ce)
-        # print(ce.response['ResponseMetadata'])
-        # print("Creating temp bucket: ", the_temp_bucket)
-        # if system_params['region'] == "us-east-1":
-        #     bucket = s3_client.create_bucket(Bucket=the_temp_bucket)
-        # else:
-        #     bucket = s3_client.create_bucket(Bucket=the_temp_bucket, CreateBucketConfiguration=location)
-
-    # Upload job script to script bucket
-    # the_script_key = f"{workflow_name}/{file_name}"
-    # the_script_location = f"s3://{the_script_bucket}/{the_script_key}"
-    # with open("conversion/conversion.py", "rb") as f:
-    #     s3_client.upload_fileobj(f, the_script_bucket, the_script_key)
-
-    # Structure workflow
     jobs = []
     crawlers = []
-
-    # Create tmp Table if it does not exists
-    # try:
-    #     glue.create_table(
-    #         DatabaseName=user_params['DestinationDatabaseName'],
-    #         TableInput={
-    #             'Name': "source_" + user_params['DestinationTableName'],
-    #             'StorageDescriptor': {
-    #                 'Location': user_params['InputDataLocation']
-    #             },
-    #             'Parameters': {
-    #                 'groupFiles': 'inPartition',
-    #                 'groupSize': '33554432',
-    #             }
-    #         }
-    #     )
-    #     print("New table is created.")
-    # except glue.exceptions.AlreadyExistsException:
-    #     print("Existing table is used.")
-    
 
     command = {
         "Name": "glueetl",
@@ -160,14 +90,20 @@ def generate_layout(user_params, system_params):
 
     return workflow
 
-
-
-
-print(__name__)
-
-
 def main():
-    try:
+    try:    
+        
+        curr_path = Path(os.getcwd())
+        parent_path = curr_path.parents[1] # should be blueprint directory
+        
+        # Check if awsglue exist 
+        glue_path = str(parent_path) + '/awsglue'
+        assert os.path.isdir(glue_path)
+        
+        # add the awsglue path as part of the system path
+        sys.path.append(str(parent_path))
+        # Change append to system path in order to import aws glue modules
+
         USER_PARAMS = {"WorkflowName": os.environ["_WorkflowName"],
                "ScriptLocation": os.environ["_ScriptLocation"],
                "IAMRole": os.environ["_IAMRole"],

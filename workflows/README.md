@@ -6,22 +6,9 @@
 - This module assumes that you have git setup on your local machine
 - The module assumes that you have a version on python 2.6 or later installed on your local environment
 - The module assumes you have python package manager `pip` installed. [docs](https://pip.pypa.io/en/stable/installation/)
-- The module assumes you have python environment manager `virtualevn` be installed [docs](`https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d`)
+- The module assumes you have python environment manager `virtualevn` installed [docs](`https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d`)
 
 
-In order to run blue-prints locally you need to clone the glue-blueprint libraries repository 
-`git@github.com:awslabs/aws-glue-blueprint-libs.git`
-
-and import them from the `awsglue` within the repository folder
-
-```
-from pprint import pprint
-from awsglue.blueprint.workflow import *
-from awsglue.blueprint.job import *
-from awsglue.blueprint.crawler import *
-```
-
-**Note** that this library might already be installed in the repository. 
 
 In order to run the blueprint locally it still requires that you deploy some AWS resources
 
@@ -33,7 +20,7 @@ Deploy infrastructure.
 
 `terraform apply`
 
-The infrastructure will be deployed using your default AWS profile. You can change your targeted profile in the `provider.tf` file
+The infrastructure will be deployed using your default AWS profile. You can change your targeted profile in the   `variable.tf` file by setting the `profile` attribute to your AWS profile
 
 if you terraform executing successfully a bootstrap.sh folder should exist in the root directory of workflows folder. Run the following command to execute the bootstrap command
 
@@ -45,7 +32,7 @@ This should export environment variables to populate `user_params` for AWS glue 
 
 cd into blueprint folder 
 
-`cd blueprint`
+`cd blueprint/template/blueprint`
 
 create a virtual environment and call it `env` if it does not exist already
 
@@ -69,6 +56,7 @@ or
 python version 3
 
 `python3 layout.py`
+
 
 
 
@@ -109,6 +97,24 @@ In order to create workflows from blueprint you need a role that allows the blue
 
 
 # Writing a blue print
+
+
+In order to run blue-prints locally you need to clone the glue-blueprint libraries repository 
+
+`git@github.com:awslabs/aws-glue-blueprint-libs.git`
+
+and import them from the `awsglue` folder.
+
+```
+from pprint import pprint
+from awsglue.blueprint.workflow import *
+from awsglue.blueprint.job import *
+from awsglue.blueprint.crawler import *
+```
+
+**Note** that this library might already be installed in the repository. 
+
+
  - The blueprint layout script must include a function that generates the entities in your workflow. You can name this function whatever you like. AWS Glue uses the configuration file to determine the fully qualified name of the function
  - The layout function must accept the following input arguments.
     
