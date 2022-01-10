@@ -89,9 +89,9 @@ Start the container using the following command
 ```
 docker run -itd -p 8888:8888 -p 4040:4040 \
 -v ~/.aws:/root/.aws:ro \
--v ${PWD}/scripts/:/home/jupyter/jupyter_default_dir/scripts \
--v ${PWD}/data/:/home/jupyter/jupyter_default_dir/data \
---name glue_jupyter amazon/aws-glue-libs:glue_libs_3.0.0_image_01 /home/jupyter/jupyter_start.sh
+-v ${PWD}/scripts/:/home/glue_user/workspace/jupyter_workspace/scripts \
+-v ${PWD}/data/:/home/glue_user/workspace/jupyter_workspace/data \
+--name glue_jupyter amazon/aws-glue-libs:glue_libs_3.0.0_image_01 /home/glue_user/jupyter/jupyter_start.sh
 ```
 
 
