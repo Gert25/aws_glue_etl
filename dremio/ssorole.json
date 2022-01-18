@@ -1,0 +1,165 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DeleteStack",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:UpdateStack",
+                "cloudformation:UpdateTerminationProtection"
+            ],
+            "Resource": [
+                "arn:aws:cloudformation:*:*:stack/StackSet*",
+                "arn:aws:cloudformation:*:*:stack/oblcc*",
+                "arn:aws:cloudformation:*:*:stack/pnhcore*",
+                "arn:aws:cloudformation:*:*:stack/AWSControlTower*",
+                "arn:aws:cloudformation:*:*:stack/CDK*"
+            ],
+            "Effect": "Deny",
+            "Sid": "DenyCfnDelete"
+        },
+        {
+            "Condition": {
+                "StringNotEquals": {
+                    "ec2:Tenancy": "default"
+                }
+            },
+            "Action": "ec2:RunInstances",
+            "Resource": [
+                "arn:aws:ec2:*:*:instance/*"
+            ],
+            "Effect": "Deny",
+            "Sid": "AllowOnlyEC2InstanceWithDefaultTenancy"
+        },
+        {
+            "Action": [
+                "ec2:AttachClassicLinkVpc",
+                "ec2:AttachInternetGateway",
+                "ec2:AttachVpnGateway",
+                "ec2:AssociateDhcpOptions",
+                "ec2:AssociateRouteTable",
+                "ec2:CreateDefaultVpc",
+                "ec2:CreateVpc",
+                "ec2:CreateSubnet",
+                "ec2:CreateRouteTable",
+                "ec2:CreateRoute",
+                "ec2:CreateInternetGateway",
+                "ec2:CreateVpcPeeringConnection",
+                "ec2:CreateCustomerGateway",
+                "ec2:CreateDhcpOptions",
+                "ec2:CreateFlowLogs",
+                "ec2:CreateInternetGateway",
+                "ec2:CreateNatGateway",
+                "ec2:CreateNetworkAcl",
+                "ec2:CreateNetworkAclEntry",
+                "ec2:CreateVpcEndpoint",
+                "ec2:CreateVpnConnection",
+                "ec2:CreateVpnConnectionRoute",
+                "ec2:CreateVpnGateway",
+                "ec2:DeleteDefaultVpc",
+                "ec2:DeleteVpc",
+                "ec2:DeleteInternetGateway",
+                "ec2:DeleteSubnet",
+                "ec2:DeleteRouteTable",
+                "ec2:DeleteCustomerGateway",
+                "ec2:DeleteDhcpOptions",
+                "ec2:DeleteNetworkAcl",
+                "ec2:DeleteNetworkAclEntry",
+                "ec2:DeleteRoute",
+                "ec2:DeleteVpcPeeringConnection",
+                "ec2:DeleteFlowLogs",
+                "ec2:DeleteNatGateway",
+                "ec2:DeleteVpcEndpoints",
+                "ec2:DeleteVpnConnection",
+                "ec2:DeleteVpnConnectionRoute",
+                "ec2:DeleteVpnGateway",
+                "ec2:DetachInternetGateway",
+                "ec2:DetachClassicLinkVpc",
+                "ec2:DetachVpnGateway",
+                "ec2:DisableVpcClassicLink",
+                "ec2:DisableVgwRoutePropagation",
+                "ec2:DisableVpcClassicLinkDnsSupport",
+                "ec2:DisassociateRouteTable",
+                "ec2:EnableVpcClassicLink",
+                "ec2:EnableVgwRoutePropagation",
+                "ec2:EnableVpcClassicLinkDnsSupport",
+                "ec2:ModifySubnetAttribute",
+                "ec2:ModifyVpcEndpoint",
+                "ec2:ModifyVpcPeeringConnectionOptions",
+                "ec2:ModifyVpcAttribute",
+                "ec2:ReplaceNetworkAclAssociation",
+                "ec2:ReplaceNetworkAclEntry",
+                "ec2:ReplaceRoute",
+                "ec2:ReplaceRouteTableAssociation"
+            ],
+            "Resource": "*",
+            "Effect": "Deny",
+            "Sid": "DenyTheseVPCrelatedServices"
+        },
+        {
+            "Action": [
+                "iam:UpdateUser",
+                "iam:PutUserPermissionsBoundary",
+                "iam:AttachUserPolicy",
+                "iam:DeleteUserPolicy",
+                "iam:DeleteUser",
+                "iam:DeleteUserPermissionsBoundary",
+                "iam:CreateUser",
+                "iam:TagUser",
+                "iam:UntagUser",
+                "iam:RemoveUserFromGroup",
+                "iam:AddUserToGroup",
+                "iam:PutUserPolicy",
+                "iam:DetachUserPolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:user/*",
+                "arn:aws:iam::*:group/*"
+            ],
+            "Effect": "Deny",
+            "Sid": "DenyWriteToUser"
+        },
+        {
+            "Action": [
+                "iam:DeleteRolePermissionsBoundary",
+                "iam:DeleteUserPermissionsBoundary"
+            ],
+            "Resource": "*",
+            "Effect": "Deny",
+            "Sid": "DenyDeletePermissionsBoundary"
+        },
+        {
+            "Action": [
+                "iam:CreatePolicyVersion",
+                "iam:DeletePolicy",
+                "iam:DeletePolicyVersion",
+                "iam:SetDefaultPolicyVersion"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:policy/pnhcore-permissions-boundary"
+            ],
+            "Effect": "Deny",
+            "Sid": "DenyWriteToThisPolicy"
+        },
+        {
+            "Condition": {
+                "StringNotEquals": {
+                    "iam:PermissionsBoundary": "arn:aws:iam::*:policy/pnhcore-permissions-boundary"
+                }
+            },
+            "Action": [
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:PutRolePermissionsBoundary",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy"
+            ],
+            "Resource": "*",
+            "Effect": "Deny",
+            "Sid": "DenyWriteToRoleWithoutBoundaryPolicy"
+        }
+    ]
+}

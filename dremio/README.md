@@ -6,6 +6,18 @@
  
 Further instructions on how to install aws copilot on your OS environment can be found [here](https://aws.github.io/copilot-cli/docs/getting-started/install/)
 
+# Initializing Copilot 
+
+Run the following to initialize copilot 
+
+`copilot  init`
+
+- Create a name for the application
+- Choose `Load Balanced Web Service` for workload type
+- Choose `./Dockerfile`for Dockerfile 
+- Choose `9047` for port type   
+
+
 
 # Running Copilot 
   
