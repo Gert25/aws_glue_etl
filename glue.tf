@@ -23,7 +23,7 @@ resource "aws_glue_job" "job1" {
   number_of_workers = 2
   
   worker_type ="G.1X"
-
+  
   default_arguments = {
   "--JOB_NAME" =  "production"
   "--OUTPUT_SRC" =  "s3://${var.glue_buckets["output"]}"
@@ -33,6 +33,7 @@ resource "aws_glue_job" "job1" {
   "--OUTPUT_FORMAT" ="parquet"
   "--CONN_TYPE" =  "s3" 
   # TODO: [DATA-342] create validation to ensure the --enable-metrics value is always set
+  # TODO:  [DATA-343] add enable-metrics to glue arguments
    "--enable-metrics" =""  
   "--HOME_DIR" = "None" # required to set this parameter else it will fail during cloud deployment
   }
