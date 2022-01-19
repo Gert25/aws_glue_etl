@@ -119,6 +119,9 @@ Jupyter notebook home directory
 
 # Running terraform 
 
+ ## Running with input variables
+  `terraform apply -var="pnh.tfvars"`
+
  - Install the latest version of the terraform cli. [Docs](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
  - To run the example, `cd` into the examples folder  and run  `terraform init` to install all dependencies.

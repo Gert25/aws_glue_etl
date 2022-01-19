@@ -20,7 +20,10 @@ resource "aws_glue_job" "job1" {
   name     = "${var.prefix}-job1"
   role_arn = aws_iam_role.glue_role.arn
   glue_version  = "3.0"
+  number_of_workers = 2
   
+  worker_type ="G.1X"
+
   default_arguments = {
   "--JOB_NAME" =  "production"
   "--OUTPUT_SRC" =  "s3://${var.glue_buckets["output"]}"
@@ -28,7 +31,7 @@ resource "aws_glue_job" "job1" {
   "--SRC_TYPE"= "csv" 
   "--ENV"= "production"
   "--OUTPUT_FORMAT" ="parquet"
-  "--CONN_TYPE" =  "s3" 
+
   "--HOME_DIR" = "None" # required to set this parameter else it will fail during cloud deployment
   }
 

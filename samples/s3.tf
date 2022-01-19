@@ -4,6 +4,7 @@ resource "aws_s3_bucket" "data" {
   bucket        = "${local.prefix}-data"
   acl           = "private"
   force_destroy = true
+
 }
 
 
@@ -21,6 +22,7 @@ resource "aws_s3_bucket" "output" {
 
 }
 
+# TODO: [AICT-1] Add Athena code
 resource "aws_s3_bucket" "athena" {
   bucket        = "${local.prefix}-athena"
   acl           = "private"
@@ -32,6 +34,7 @@ resource "aws_s3_bucket" "athena" {
 
 
 resource "aws_s3_bucket_object" "job1" {
+  
   bucket = aws_s3_bucket.s3_scripts.bucket
   key    = "job.py"
   source = "${path.module}/scripts/${local.job_script}"
