@@ -31,7 +31,9 @@ resource "aws_glue_job" "job1" {
   "--SRC_TYPE"= "csv" 
   "--ENV"= "production"
   "--OUTPUT_FORMAT" ="parquet"
-
+  "--CONN_TYPE" =  "s3" 
+  # TODO: [DATA-342] create validation to ensure the --enable-metrics value is always set
+   "--enable-metrics" =true  
   "--HOME_DIR" = "None" # required to set this parameter else it will fail during cloud deployment
   }
 

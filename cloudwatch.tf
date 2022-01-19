@@ -2,7 +2,7 @@
 
 resource "aws_cloudwatch_log_metric_filter" "glue_error" {
 
-
+    
     log_group_name = "/aws-glue/jobs/error"
     name           = "glue-errors"
     pattern        = "ERROR"
