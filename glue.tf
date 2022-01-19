@@ -29,7 +29,7 @@ resource "aws_glue_job" "job1" {
   "--ENV"= "production"
   "--OUTPUT_FORMAT" ="parquet"
   "--CONN_TYPE" =  "s3" 
-  "--HOME_DIR" = ""
+  "--HOME_DIR" = "None" # required to set this parameter else it will fail during cloud deployment
   }
 
   command {
