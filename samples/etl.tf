@@ -3,7 +3,7 @@ module "etl" {
    source = "../"
 
 
-    prefix = "euw1-cap"
+    prefix = local.prefix
     glue_buckets = { 
       "data" = aws_s3_bucket.data.bucket, 
       "scripts"= aws_s3_bucket.s3_scripts.bucket 

@@ -1,5 +1,5 @@
 locals {
-  prefix = "euw1-cap"
+  prefix = "euw1-pnh"
 
   job_script = "job1.py"
   data_script = "Salaries.csv"

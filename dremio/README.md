@@ -17,6 +17,8 @@ Run the following to initialize copilot
 - Choose `./Dockerfile`for Dockerfile 
 - Choose `9047` for port type   
 
+# Destroy infrastructure
+`copilot app delete --yes`
 
 
 # Running Copilot 
