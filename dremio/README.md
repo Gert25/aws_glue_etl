@@ -35,3 +35,21 @@ Deploying infrastructure with copilot run the following command:
 `copilot deploy` 
  
  Copilot will deploy the infrastructure as specified by the `manifest.yml` file in the `copilot` folder. 
+
+ # Known Issues
+
+ ## STOPPED (OutOfMemoryError: Container killed due to memory u)
+ 
+ By default copilot deploys your container with minimum memory. Dremio requires at least 4GB of memory to startup. 
+ 
+ Memory increases on ECS has to be updated in corelation with CPU availability. See the AWS [docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html) on the relation between Memory and CPU updates. 
+
+ You can update the ECS container cpu and memory in the `copilot/<app-name>/manifest.yml` file in the memory and cpu section. 
+
+ ```
+
+cpu: 1024       # Number of CPU units for the task.
+memory: 4096    # Amount of memory in MiB used by the task.
+
+```
+
